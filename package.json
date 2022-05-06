@@ -2,6 +2,7 @@
   "name": "@script/rc",
   "version": "0.0.3",
   "main": "./src/script-rc.ts",
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p ./src",
