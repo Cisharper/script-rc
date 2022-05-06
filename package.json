@@ -1,7 +1,7 @@
 {
   "name": "@script/rc",
   "version": "0.0.3",
-  "main": "./build/script-rc.js",
+  "main": "./src/script-rc.ts",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p ./src",
