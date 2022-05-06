@@ -1,7 +1,7 @@
 {
-  "name": "@metaplex/cli",
+  "name": "@script-rc",
   "version": "0.0.3",
-  "main": "./build/cli.js",
+  "main": "./build/script-rc.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p ./src",
