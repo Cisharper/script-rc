@@ -93,7 +93,8 @@ export const mintNFT = async (
   orig_sig: string,
   UserWallet: string,
   collection_verify: string,
-  treasuryWallet: PublicKey,
+    treasuryWallet: PublicKey,
+    cache_path: string,
 ): Promise<MintResult | void> => {
 
 
@@ -130,7 +131,7 @@ export const mintNFT = async (
  
 
  
-  fs.writeFile("/metaplex/1/0.json", JSON.stringify(sol_obj_json), function (err) {
+    fs.writeFile(cache_path+"/0.json", JSON.stringify(sol_obj_json), function (err) {
     if (err) {
       console.log(err);
     }
@@ -146,7 +147,7 @@ export const mintNFT = async (
   let collectionMint;
   const setCollectionMint = false;
 
-  const path_json = "/metaplex/1";
+    const path_json = cache_path;
 
   let files = fs.readdirSync(`${path_json}`).map(file => path.join(path_json, file));
 
