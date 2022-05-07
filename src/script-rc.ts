@@ -117,7 +117,7 @@ export const mintNFT = async (
 
   let eth_obj_json = JSON.parse(eth_str_json);
   log.info(eth_obj_json);
-  let sol_str_json = '{    "name": "Royal Crow #2300",    "symbol": "RC",    "description": "RC unrevealed",    "attributes": [      {        "trait_type": "unrevealed",        "value": "unrevealed"       }    ],    "collection": {       "name": "RC name",       "family": "RC family"     },    "seller_fee_basis_points": 500,    "image": "image.png",    "properties": {      "creators": [        {         "address": "CSPYu4wH1hMPosEwo5esshdMAri2dqCkLXWsuHYFqSmp",          "share": 100}      ],"files": [{ "uri": "image.jpg", "type": "image/jpg" }]}  }';
+  let sol_str_json = '{    "name": "Royal Crow #2300",    "symbol": "RC",    "description": "RC unrevealed",    "attributes": [      {        "trait_type": "unrevealed",        "value": "unrevealed"       }    ],    "collection": {       "name": "RC name",       "family": "RC family"     },    "seller_fee_basis_points": 500,    "image": "image.png",    "properties": {      "creators": [        {         "address": "7osbA4vs7gKtSf7JyNUgVJtTQz4SRg5gHgVvWnkMKnqn",          "share": 100}      ],"files": [{ "uri": "image.jpg", "type": "image/jpg" }]}  }';
   let sol_obj_json = JSON.parse(sol_str_json);
   sol_obj_json.name = eth_obj_json.name;
   sol_obj_json.description = eth_obj_json.description;
