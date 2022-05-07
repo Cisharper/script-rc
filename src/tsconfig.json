@@ -5,7 +5,7 @@
     "types": [ "jest", "node" ]
   
 },
-  "exclude": [ "/back/test-mod/node_modules" ],
+  "exclude": [ "/back/test-mod/node_modules/*" ],
   "atom": {
     "rewriteTsconfig": false
   }
