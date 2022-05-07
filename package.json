@@ -1,9 +1,7 @@
 {
   "name": "@script/rc",
-  "version": "0.0.3",
-  "main": "./src/script-rc.ts",
-  "target": "esnext",
-  "module": "commonjs",
+  "version": "0.0.4",
+  "main": "./build/cli.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p ./src",
