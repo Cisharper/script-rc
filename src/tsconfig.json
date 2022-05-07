@@ -5,7 +5,7 @@
     "types": [ "jest", "node" ]
   
 },
-  "exclude": [ "/back/test-mod/node_modules", "typings/browser", "typings/browser.d.ts" ],
+  "exclude": [ "/back/test-mod/node_modules" ],
   "atom": {
     "rewriteTsconfig": false
   }
