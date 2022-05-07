@@ -12,7 +12,7 @@ async function main() {
   let treasuryWallet = new PublicKey("7osbA4vs7gKtSf7JyNUgVJtTQz4SRg5gHgVvWnkMKnqn");
 
 
- await mintNFT(eth_str_json,keypair,env,orig_sig,UserWallet,collection_verify,treasuryWallet);
+ //await mintNFT(eth_str_json,keypair,env,orig_sig,UserWallet,collection_verify,treasuryWallet);
 
 
 
