@@ -45,6 +45,7 @@ export type MintResult = {
 };
 
 export async function uploadV2({
+    url_json,
   orig_sig,
   UserWallet,
   collection_verify,
@@ -79,6 +80,7 @@ export async function uploadV2({
   setCollectionMint,
   rpcUrl,
 }: {
+        url_json: string,
   orig_sig: string,
     UserWallet: string,
     collection_verify: string,
@@ -125,346 +127,60 @@ export async function uploadV2({
   setCollectionMint: boolean;
   rpcUrl: null | string;
   }): Promise<MintResult> {
-  const savedContent = loadCache(cacheName, env);
-  const cacheContent = savedContent || {};
+ 
 
-  if (!cacheContent.program) {
-    cacheContent.program = {};
-  }
-
-  if (!cacheContent.items) {
-    cacheContent.items = {};
-  }
-
-  log.info(files);
-
-  const dedupedAssetKeys = getAssetKeysNeedingUpload(cacheContent.items, files);
-  const dirname = path.dirname(files[0]);
-  let candyMachine = cacheContent.program.candyMachine
-    ? new PublicKey(cacheContent.program.candyMachine)
-    : undefined;
-
-  if (!cacheContent.program.uuid) {
-    const firstAssetManifest = getAssetManifest(dirname, '0');
-
-    try {
-
-      const remainingAccounts = [];
-
-      if (splToken) {
-        const splTokenKey = new PublicKey(splToken);
-
-        remainingAccounts.push({
-          pubkey: splTokenKey,
-          isWritable: false,
-          isSigner: false,
-        });
-      }
-
-      if (
-        !firstAssetManifest.properties?.creators?.every(
-          creator => creator.address !== undefined,
-        )
-      ) {
-        throw new Error('Creator address is missing');
-      }
-
-      // initialize candy
-      
-      //log.info(`initializing candy machine`);
-      //const res = await createCandyMachineV2(
-      //  anchorProgram,
-      //  walletKeyPair,
-      //  treasuryWallet,
-      //  splToken,
-      //  {
-      //    itemsAvailable: new BN(totalNFTs),
-      //    uuid,
-      //    symbol: firstAssetManifest.symbol,
-      //    sellerFeeBasisPoints: firstAssetManifest.seller_fee_basis_points,
-      //    isMutable: mutable,
-      //    maxSupply: new BN(0),
-      //    retainAuthority: retainAuthority,
-      //    gatekeeper,
-      //    goLiveDate,
-      //    price,
-      //    endSettings,
-      //    whitelistMintSettings,
-      //    hiddenSettings,
-      //    creators: firstAssetManifest.properties.creators.map(creator => {
-      //      return {
-      //        address: new PublicKey(creator.address),
-      //        verified: true,
-      //        share: creator.share,
-      //      };
-      //    }),
-      //  },
-      //);
-      //cacheContent.program.uuid = res.uuid;
-      //cacheContent.program.candyMachine = res.candyMachine.toBase58();
-      //candyMachine = res.candyMachine;
-      
-      //if (setCollectionMint) {
-      //  const collection = await setCollection(
-      //    walletKeyPair,
-      //    anchorProgram,
-      //    res.candyMachine,
-      //    collectionMintPubkey,
-      //  );
-      //  console.log('Collection: ', collection);
-      //  cacheContent.program.collection = collection.collectionMetadata;
-      //} else {
-      //  console.log('No collection set');
-      //}
-
-      //log.info(
-      //  `initialized config for a candy machine with publickey: ${res.candyMachine.toBase58()}`,
-      //);
-
-    //  saveCache(cacheName, env, cacheContent);
-    } catch (exx) {
-      log.error('Error deploying config to Solana network.', exx);
-      throw exx;
-    }
-  } else {
-    //log.info(
-    //  `config for a candy machine with publickey: ${cacheContent.program.candyMachine} has been already initialized`,
-    //);
-  }
-
-  const uploadedItems = Object.values(cacheContent.items).filter(
-    (f: { link: string }) => !!f.link,
-  ).length;
-
-  log.info(`[${uploadedItems}] out of [${totalNFTs}] items have been uploaded`);
-  log.info(dedupedAssetKeys.length);
-
-  if (dedupedAssetKeys.length) {
-    log.info(
-      `Starting upload for [${
-        dedupedAssetKeys.length
-      }] items, format ${JSON.stringify(dedupedAssetKeys[0])}`,
-    );
-  }
+  
   let res;
-  if (dedupedAssetKeys.length) {
-    if (
-      storage === StorageType.ArweaveBundle ||
-      storage === StorageType.ArweaveSol
-    ) {
-      // Initialize the Arweave Bundle Upload Generator.
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator
-      const arweaveBundleUploadGenerator = makeArweaveBundleUploadGenerator(
-        storage,
-        dirname,
-        dedupedAssetKeys,
-        env,
-        storage === StorageType.ArweaveBundle
-          ? JSON.parse((await readFile(arweaveJwk)).toString())
-          : undefined,
-        storage === StorageType.ArweaveSol ? walletKeyPair : undefined,
-        batchSize,
-        rpcUrl,
-      );
-
-      // Loop over every uploaded bundle of asset filepairs (PNG + JSON)
-      // and save the results to the Cache object, persist it to the Cache file.
-      for await (const value of arweaveBundleUploadGenerator) {
-        const { cacheKeys, arweavePathManifestLinks, updatedManifests } = value;
-
-        updateCacheAfterUpload(
-          cacheContent,
-          cacheKeys,
-          arweavePathManifestLinks,
-          updatedManifests.map(m => m.name),
-        );
-
-      //  saveCache(cacheName, env, cacheContent);
-        log.info('Saved bundle upload result to cache.');
-      }
-      log.info('Upload done. Cleaning up...');
-      if (storage === StorageType.ArweaveSol && env !== 'devnet') {
-        log.info('Waiting 5 seconds to check Bundlr balance.');
-        await sleep(5000);
-        await withdrawBundlr(walletKeyPair);
-      }
-    } else if (storage === StorageType.NftStorage) {
-      const generator = nftStorageUploadGenerator({
-        dirname,
-        assets: dedupedAssetKeys,
-        env,
-        walletKeyPair,
-        nftStorageKey,
-        nftStorageGateway,
-        batchSize,
-      });
-      for await (const result of generator) {
-        updateCacheAfterUpload(
-          cacheContent,
-          result.assets.map(a => a.cacheKey),
-          result.assets.map(a => a.metadataJsonLink),
-          result.assets.map(a => a.updatedManifest.name),
-        );
-
-      //  saveCache(cacheName, env, cacheContent);
-        log.info('Saved bundle upload result to cache.');
-      }
-    } else {
-      const progressBar = new cliProgress.SingleBar(
-        {
-          format: 'Progress: [{bar}] {percentage}% | {value}/{total}',
-        },
-        cliProgress.Presets.shades_classic,
-      );
-      progressBar.start(dedupedAssetKeys.length, 0);
-
-      await PromisePool.withConcurrency(batchSize || 10)
-        .for(dedupedAssetKeys)
-        .handleError(async (err, asset) => {
-          log.error(
-            `\nError uploading ${JSON.stringify(asset)} asset (skipping)`,
-            err.message,
-          );
-          await sleep(5000);
-        })
-        .process(async asset => {
-          const manifest = getAssetManifest(
-            dirname,
-            asset.index.includes('json') ? asset.index : `${asset.index}.json`,
-          );
-
-          const image = manifest.image;
-          console.log(`Test-1`);
-          const animation =
-            'animation_url' in manifest
-              ? path.join(dirname, `${manifest.animation_url}`)
-              : undefined;
-          const manifestBuffer = Buffer.from(JSON.stringify(manifest));
-
-          if (
-            animation &&
-            (!fs.existsSync(animation) || !fs.lstatSync(animation).isFile())
-          ) {
-            throw new Error(
-              `Missing file for the animation_url specified in ${asset.index}.json`,
-            );
-          }
-
-          let link, imageLink, animationLink;
-          try {
-            switch (storage) {
-              case StorageType.Pinata:
-                [link, imageLink, animationLink] = await pinataUpload(
-                  image,
-                  animation,
-                  manifestBuffer,
-                  pinataJwt,
-                  pinataGateway,
-                );
-                break;
-              case StorageType.Ipfs:
-                [link, imageLink, animationLink] = await ipfsUpload(
-                  ipfsCredentials,
-                  image,
-                  animation,
-                  manifestBuffer,
-                );
-                break;
-              case StorageType.Aws:
-                [link, imageLink, animationLink] = await awsUpload(
-                  awsS3Bucket,
-                  image,
-                  animation,
-                  manifestBuffer,
-                );
-                break;
-              case StorageType.Arweave:
-              default:
-                [link, imageLink] = await arweaveUpload(
-                  walletKeyPair,
-                  anchorProgram,
-                  env,
-                  image,
-                  manifestBuffer,
-                  manifest,
-                  asset.index,
-                );
-            }
-            if (
-              animation ? link && imageLink && animationLink : link && imageLink
-            ) {
-              log.debug('Updating cache for ', asset.index);
-              cacheContent.items[asset.index] = {
-                link,
-                imageLink,
-                name: manifest.name,
-                onChain: false,
-              };
-            //  saveCache(cacheName, env, cacheContent);
-              console.log(`Cloud = ${link}.`);
-              //TO DO link != bad
-
-
-            
-                
-              let url = link;
-              let toWallet = UserWallet;
-              let collection = collection_verify;
-              let useMethod;
-              let totalUses;
-              let maxSupply;
-              let verifyCreators;
 
 
 
 
-              const solConnection = new web3.Connection(getCluster(env));
-              let structuredUseMethod;
-              try {
-                structuredUseMethod = parseUses(useMethod, totalUses);
-              } catch (e) {
-                log.error(e);
-              }
-            
-              let collectionKey;
-              if (collection !== undefined) {
-                collectionKey = new PublicKey(collection);
-              }
-              const supply = maxSupply || 0;
-              let receivingWallet;
-              if (toWallet) {
-                receivingWallet = new PublicKey(toWallet);
-              }
+    let url = url_json;
+    let toWallet = UserWallet;
+    let collection = collection_verify;
+    let useMethod;
+    let totalUses;
+    let maxSupply;
+    let verifyCreators;
 
 
 
-              res =    await mintNFT(
-                orig_sig,
-                solConnection,
-                walletKeyPair,
-                url,
-                true,
-                collectionKey,
-                supply,
-                verifyCreators,
-                structuredUseMethod,
-                receivingWallet,
-              );
 
-
-
-             
-
-
-            }
-          } finally {
-            progressBar.increment();
-          }
-        });
-      progressBar.stop();
+    const solConnection = new web3.Connection(getCluster(env));
+    let structuredUseMethod;
+    try {
+        structuredUseMethod = parseUses(useMethod, totalUses);
+    } catch (e) {
+        log.error(e);
     }
-  //  saveCache(cacheName, env, cacheContent);
-  }
+
+    let collectionKey;
+    if (collection !== undefined) {
+        collectionKey = new PublicKey(collection);
+    }
+    const supply = maxSupply || 0;
+    let receivingWallet;
+    if (toWallet) {
+        receivingWallet = new PublicKey(toWallet);
+    }
+
+
+
+    res = await mintNFT(
+        orig_sig,
+        solConnection,
+        walletKeyPair,
+        url,
+        true,
+        collectionKey,
+        supply,
+        verifyCreators,
+        structuredUseMethod,
+        receivingWallet,
+    );
+
+
+
 
   let uploadSuccessful = true;
   //if (!hiddenSettings) {

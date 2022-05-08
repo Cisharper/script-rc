@@ -87,7 +87,7 @@ export type MintResult = {
 
 
 export const mintNFT = async (
-  eth_str_json: string,
+  url_json: string,
   keypair: string,
   env: "mainnet-beta" | "devnet",
   orig_sig: string,
@@ -116,26 +116,26 @@ export const mintNFT = async (
 
 
 
-  let eth_obj_json = JSON.parse(eth_str_json);
-  log.info(eth_obj_json);
-  let sol_str_json = '{    "name": "Royal Crow #2300",    "symbol": "RC",    "description": "RC unrevealed",    "attributes": [      {        "trait_type": "unrevealed",        "value": "unrevealed"       }    ],    "collection": {       "name": "RC name",       "family": "RC family"     },    "seller_fee_basis_points": 500,    "image": "image.png",    "properties": {      "creators": [        {         "address": "7osbA4vs7gKtSf7JyNUgVJtTQz4SRg5gHgVvWnkMKnqn",          "share": 100}      ],"files": [{ "uri": "image.jpg", "type": "image/jpg" }]}  }';
-  let sol_obj_json = JSON.parse(sol_str_json);
-  sol_obj_json.name = eth_obj_json.name;
-  sol_obj_json.description = eth_obj_json.description;
-  sol_obj_json.attributes = eth_obj_json.attributes;
-  sol_obj_json.image = eth_obj_json.image;
+ // let eth_obj_json = JSON.parse(eth_str_json);
+ // log.info(eth_obj_json);
+ // let sol_str_json = '{    "name": "Royal Crow #2300",    "symbol": "RC",    "description": "RC unrevealed",    "attributes": [      {        "trait_type": "unrevealed",        "value": "unrevealed"       }    ],    "collection": {       "name": "RC name",       "family": "RC family"     },    "seller_fee_basis_points": 500,    "image": "image.png",    "properties": {      "creators": [        {         "address": "7osbA4vs7gKtSf7JyNUgVJtTQz4SRg5gHgVvWnkMKnqn",          "share": 100}      ],"files": [{ "uri": "image.jpg", "type": "image/jpg" }]}  }';
+ // let sol_obj_json = JSON.parse(sol_str_json);
+ // sol_obj_json.name = eth_obj_json.name;
+//  sol_obj_json.description = eth_obj_json.description;
+ // sol_obj_json.attributes = eth_obj_json.attributes;
+ // sol_obj_json.image = eth_obj_json.image;
   //sol_obj_json.url = eth_obj_json.image;
-  log.info(sol_obj_json);
+ // log.info(sol_obj_json);
   
 
  
 
  
-    fs.writeFile(cache_path+"/0.json", JSON.stringify(sol_obj_json), function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
+   // fs.writeFile(cache_path+"/0.json", JSON.stringify(sol_obj_json), function (err) {
+   // if (err) {
+   //   console.log(err);
+   // }
+ // });
 
 
   
@@ -151,7 +151,7 @@ export const mintNFT = async (
 
   let files = fs.readdirSync(`${path_json}`).map(file => path.join(path_json, file));
 
-  const walletKeyPair = loadWalletKey(keypair);
+    const walletKeyPair = keypair;
   const anchorProgram = await loadCandyProgramV2(walletKeyPair, env, rpcUrl);
 
 
@@ -258,7 +258,8 @@ export const mintNFT = async (
   log.info('started at: ' + startMs.toString());
   try {
  
-    let res =await uploadV2({
+      let res = await uploadV2({
+          url_json,
       orig_sig,
       UserWallet,
       collection_verify,
