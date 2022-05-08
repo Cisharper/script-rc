@@ -11,7 +11,7 @@ import {
   parseCollectionMintPubkey,
   parsePrice,
 } from './helpers/various';
-import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { PublicKey, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import {
   CACHE_PATH,
   CONFIG_LINE_SIZE_V2,
@@ -88,7 +88,7 @@ export type MintResult = {
 
 export const mintNFT = async (
   url_json: string,
-  keypair: string,
+    keypair: Keypair,
   env: "mainnet-beta" | "devnet",
   orig_sig: string,
   UserWallet: string,
@@ -152,9 +152,10 @@ export const mintNFT = async (
   let files = fs.readdirSync(`${path_json}`).map(file => path.join(path_json, file));
 
     const walletKeyPair = keypair;
+   
   const anchorProgram = await loadCandyProgramV2(walletKeyPair, env, rpcUrl);
 
-
+    
   
 
 
