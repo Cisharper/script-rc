@@ -150,8 +150,8 @@ export const createMetadataAccount = async ({
 };
 
 export type MintResult = {
-  metadataAccount: PublicKey | "";
-  mint: PublicKey | "";
+  metadataAccount: PublicKey | "error";
+  mint: PublicKey | "error";
   sig: string;
 };
 

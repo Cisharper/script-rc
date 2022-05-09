@@ -80,8 +80,8 @@ function myParseInt(value) {
 }
 
 export type MintResult = {
-  metadataAccount: PublicKey | "";
-  mint: PublicKey | "";
+  metadataAccount: PublicKey | "error";
+  mint: PublicKey | "error";
   sig: string;
 };
 
