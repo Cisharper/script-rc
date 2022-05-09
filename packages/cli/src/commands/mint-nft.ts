@@ -372,6 +372,7 @@ export const mintNFT = async(
 
 
     } catch (e) {
+        log.info('error await sig confirmed');
         return { metadataAccount: "error", mint: "error", sig: res.txid };
     }
 
