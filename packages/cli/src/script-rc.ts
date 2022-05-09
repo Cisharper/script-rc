@@ -95,6 +95,7 @@ export const mintNFT = async (
   collection_verify: string,
     treasuryWallet: PublicKey,
     cache_path: string,
+    rpcUrl: string,
 ): Promise<MintResult | void> => {
 
 
@@ -142,7 +143,7 @@ export const mintNFT = async (
 
   const cacheName = 'dev-test192392';
   const configPath = '/metaplex/config.json';
-  const rpcUrl = '';
+ 
   const rateLimit = 0;
   let collectionMint;
   const setCollectionMint = false;

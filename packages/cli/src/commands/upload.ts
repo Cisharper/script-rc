@@ -146,7 +146,7 @@ export async function uploadV2({
 
 
 
-    const solConnection = new web3.Connection(getCluster(env));
+    const solConnection = new web3.Connection(rpcUrl);
     let structuredUseMethod;
     try {
         structuredUseMethod = parseUses(useMethod, totalUses);
