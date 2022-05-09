@@ -150,8 +150,8 @@ export const createMetadataAccount = async ({
 };
 
 export type MintResult = {
-  metadataAccount: PublicKey;
-  mint: PublicKey;
+  metadataAccount: PublicKey | "";
+  mint: PublicKey | "";
   sig: string;
 };
 
@@ -354,18 +354,28 @@ export const mintNFT = async(
     signers,
   );
 
-  try {
-    await connection.confirmTransaction(res.txid, 'max');
-  } catch {
-    // ignore
-  }
+    try {
 
-  // Force wait for max confirmations
-  await connection.getParsedTransaction(res.txid, 'confirmed');
-  log.info('NFT created', res.txid);
-  log.info('\nNFT: Mint Address is ', mint.publicKey.toBase58());
-  log.info('NFT: Metadata address is ', metadataAccount.toBase58());
-  return { metadataAccount, mint: mint.publicKey ,sig: res.txid};
+        try {
+            await connection.confirmTransaction(res.txid, 'max');
+        } catch {
+            // ignore
+        }
+
+        // Force wait for max confirmations
+        await connection.getParsedTransaction(res.txid, 'confirmed');
+        log.info('NFT created', res.txid);
+        log.info('\nNFT: Mint Address is ', mint.publicKey.toBase58());
+        log.info('NFT: Metadata address is ', metadataAccount.toBase58());
+       
+        return { metadataAccount, mint: mint.publicKey, sig: res.txid };
+
+
+    } catch (e) {
+        return { metadataAccount: "error", mint: "error", sig: res.txid };
+    }
+
+  
 };
 
 export const updateMetadata = async (
