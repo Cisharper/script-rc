@@ -278,7 +278,7 @@ export const mintNFT = async(
           metadata: metadataAccount,
           metadataData: data,
           updateAuthority: walletKeypair.publicKey,
-          primarySaleHappened: null,
+          primarySaleHappened: true,
           isMutable: false,
         },
       ).instructions,

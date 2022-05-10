@@ -1,8 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\src"
+    "\\packages",
+    "\\packages\\cli",
+    "\\packages\\cli\\src",
+    "\\packages\\cli\\src\\commands"
   ],
-  "SelectedNode": "\\src\\tsconfig.json",
+  "SelectedNode": "\\packages\\cli\\src\\use.ts",
   "PreviewInSolutionExplorer": false
 }
