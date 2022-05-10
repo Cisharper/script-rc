@@ -160,7 +160,7 @@ export const mintNFT = async(
   connection: Connection,
   walletKeypair: Keypair,
   metadataLink: string,
-  mutableMetadata: boolean = true,
+  mutableMetadata: boolean = false,
   collection: PublicKey = null,
   maxSupply: number = 0,
   verifyCreators: boolean,
@@ -270,7 +270,7 @@ export const mintNFT = async(
     ).instructions,
   );
 
-  if (true) {
+    if (!mutableMetadata) {
     instructions.push(
       ...new UpdateMetadataV2(
         {},
