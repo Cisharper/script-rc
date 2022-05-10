@@ -160,7 +160,7 @@ export const mintNFT = async(
   connection: Connection,
   walletKeypair: Keypair,
   metadataLink: string,
-  mutableMetadata: boolean = false,
+  mutableMetadata: boolean = true,
   collection: PublicKey = null,
   maxSupply: number = 0,
   verifyCreators: boolean,
