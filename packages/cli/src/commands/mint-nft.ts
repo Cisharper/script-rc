@@ -210,7 +210,7 @@ export const mintNFT = async(
   );
 
   const userTokenAccoutAddress = await getTokenWallet(
-    wallet.publicKey,
+      receivingWallet,
     mint.publicKey,
   );
   instructions.push(
@@ -219,7 +219,7 @@ export const mintNFT = async(
       TOKEN_PROGRAM_ID,
       mint.publicKey,
       userTokenAccoutAddress,
-      wallet.publicKey,
+        receivingWallet,
       wallet.publicKey,
     ),
   );
@@ -270,7 +270,7 @@ export const mintNFT = async(
     ).instructions,
   );
 
-    if (!mutableMetadata) {
+    if (mutableMetadata) {
     instructions.push(
       ...new UpdateMetadataV2(
         {},
@@ -285,34 +285,7 @@ export const mintNFT = async(
     );
   }
 
-  if (receivingWallet) {
-    const derivedAccount = await getTokenWallet(
-      receivingWallet,
-      mint.publicKey,
-    );
-    const createdAccountIx = Token.createAssociatedTokenAccountInstruction(
-      ASSOCIATED_TOKEN_PROGRAM_ID,
-      TOKEN_PROGRAM_ID,
-      mint.publicKey,
-      derivedAccount,
-      receivingWallet,
-      wallet.publicKey,
-    );
-    const transferIx = Token.createTransferInstruction(
-      TOKEN_PROGRAM_ID,
-      userTokenAccoutAddress,
-      derivedAccount,
-      wallet.publicKey,
-      signers,
-      1,
-    );
-    const closeAccountIx = Token.createCloseAccountInstruction(
-      TOKEN_PROGRAM_ID,
-      userTokenAccoutAddress,
-      wallet.publicKey,
-      wallet.publicKey,
-      signers,
-    );
+  
 
   //  console.log('Token close', closeAccountIx);
 
@@ -344,8 +317,8 @@ export const mintNFT = async(
 
 
 
-    instructions.push(createdAccountIx, transferIx, closeAccountIx, veritx.instructions[0], memo_sig);
-  }
+    instructions.push( veritx.instructions[0], memo_sig);
+  
 
   const res = await sendTransactionWithRetryWithKeypair(
     connection,
