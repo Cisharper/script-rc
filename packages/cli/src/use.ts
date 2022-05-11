@@ -14,7 +14,7 @@ async function main() {
     const keypair = loadWalletKey('/wallet/dev-rc.json');
 
   const env = 'devnet';
-  let orig_sig = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+  let orig_sig = "";
   let UserWallet = "3btVre38gtUQ8GXGNfePZEpeBqUy8z5cuwD5xpP2avoh";
   let collection_verify = "FeEFHu5Pbkied7zTtDYzQVyw6RAFFZVNKXjX3keC4XAG";
     let treasuryWallet = new PublicKey("7osbA4vs7gKtSf7JyNUgVJtTQz4SRg5gHgVvWnkMKnqn");
