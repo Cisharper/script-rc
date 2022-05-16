@@ -171,7 +171,7 @@ export const mintNFT = async(
   const data = await createMetadata(
     metadataLink,
     verifyCreators,
-    collection,
+    null,
     use,
   );
   if (!data) return;

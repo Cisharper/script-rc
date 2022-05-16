@@ -6,6 +6,6 @@
     "\\packages\\cli\\src",
     "\\packages\\cli\\src\\commands"
   ],
-  "SelectedNode": "\\packages\\cli\\src\\use.ts",
+  "SelectedNode": "\\packages\\cli\\src\\commands\\mint-nft.ts",
   "PreviewInSolutionExplorer": false
 }
